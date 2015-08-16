@@ -1,32 +1,14 @@
-Let's Go out to Tour.
-Shizuoka.go
-26 Jul 2015
+52md
+Golang Present Tools Editor
+15 Aug 2015
 Tags: golang shizuoka_go
 
 secondarykey
 Programer
-admin@localhost
-http://github.com/secondarykey
+http://github.com/shizuokago/52md
 @secondarykey
 
-* 自己紹介
+* This Service Alpha
 
-- name:secondarykey
-- job:Programer
-- Twitter:secondarykey
-- GitHub :secondarykey
-
-* Shizuoka.go
-
-言語戦争の話
-
-* Go言語の特徴
-
-Googleが開発している新しい言語
-
-GCあり！
-
-並行処理(スレッドではない)
-
-GAEで使用可能
+This service is still before the release . Please take care that it does not work guarantee.
 
