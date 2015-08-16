@@ -1,28 +1,38 @@
-// Copyright 2012 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package shizuokago
 
 import (
+	"bytes"
+	"fmt"
+	"golang.org/x/tools/godoc/static"
+	_ "golang.org/x/tools/playground"
 	"golang.org/x/tools/present"
 	"html/template"
 	"io"
+	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
+var scripts = []string{"jquery.js", "jquery-ui.js", "playground.js", "play.js"}
+
 func init() {
-	http.HandleFunc("/", dirHandler)
+	basePath := "./"
+	initTemplates(basePath)
+	playScript(basePath, "HTTPTransport")
+	present.PlayEnabled = true
+	// App Engine has no /etc/mime.types
+	mime.AddExtensionType(".svg", "image/svg+xml")
+	http.HandleFunc("/", slideHandler)
 }
 
-// dirHandler serves a directory listing for the requested path, rooted at basePath.
-func dirHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/favicon.ico" {
-		http.Error(w, "not found", 404)
-		return
-	}
+func playable(c present.Code) bool {
+	return present.PlayEnabled && c.Play && c.Ext == ".go"
+}
+
+func slideHandler(w http.ResponseWriter, r *http.Request) {
 	const base = "./slides"
 	name := filepath.Join(base, r.URL.Path)
 	if isDoc(name) {
@@ -76,10 +86,8 @@ func renderDoc(w io.Writer, docFile string) error {
 	if err != nil {
 		return err
 	}
-
 	// Find which template should be executed.
 	tmpl := contentTemplate[filepath.Ext(docFile)]
-
 	// Execute the template.
 	return doc.Render(w, tmpl)
 }
@@ -93,32 +101,24 @@ func parse(name string, mode present.ParseMode) (*present.Doc, error) {
 	return present.Parse(f, name, 0)
 }
 
-// showFile reports whether the given file should be displayed in the list.
-func showFile(n string) bool {
-	switch filepath.Ext(n) {
-	case ".pdf":
-	case ".html":
-	case ".go":
-	default:
-		return isDoc(n)
+func playScript(root, transport string) {
+	modTime := time.Now()
+	var buf bytes.Buffer
+	for _, p := range scripts {
+		if s, ok := static.Files[p]; ok {
+			buf.WriteString(s)
+			continue
+		}
+		b, err := ioutil.ReadFile(filepath.Join(root, "./static", p))
+		if err != nil {
+			panic(err)
+		}
+		buf.Write(b)
 	}
-	return true
+	fmt.Fprintf(&buf, "\ninitPlayground(new %v());\n", transport)
+	b := buf.Bytes()
+	http.HandleFunc("/play.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-type", "application/javascript")
+		http.ServeContent(w, r, "", modTime, bytes.NewReader(b))
+	})
 }
-
-// showDir reports whether the given directory should be displayed in the list.
-func showDir(n string) bool {
-	if len(n) > 0 && (n[0] == '.' || n[0] == '_') || n == "present" {
-		return false
-	}
-	return true
-}
-
-type dirEntry struct {
-	Name, Path, Title string
-}
-
-type dirEntrySlice []dirEntry
-
-func (s dirEntrySlice) Len() int           { return len(s) }
-func (s dirEntrySlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-func (s dirEntrySlice) Less(i, j int) bool { return s[i].Name < s[j].Name }
