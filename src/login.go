@@ -1,4 +1,4 @@
-package shizuokago
+package go2md
 
 import (
 	"fmt"
