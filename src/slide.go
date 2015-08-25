@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+var (
+	contentTemplate map[string]*template.Template
+)
 var scripts = []string{"jquery.js", "jquery-ui.js", "playground.js", "play.js"}
 
 func init() {
@@ -25,7 +28,8 @@ func init() {
 	present.PlayEnabled = true
 	// App Engine has no /etc/mime.types
 	mime.AddExtensionType(".svg", "image/svg+xml")
-	http.HandleFunc("/", slideHandler)
+	http.HandleFunc("/slides/", slideHandler)
+	http.HandleFunc("/play.js", playHandler)
 }
 
 func playable(c present.Code) bool {
@@ -49,12 +53,6 @@ func isDoc(path string) bool {
 	_, ok := contentTemplate[filepath.Ext(path)]
 	return ok
 }
-
-var (
-	// contentTemplate maps the presentable file extensions to the
-	// template to be executed.
-	contentTemplate map[string]*template.Template
-)
 
 func initTemplates(base string) error {
 	// Locate the template file.
@@ -101,8 +99,15 @@ func parse(name string, mode present.ParseMode) (*present.Doc, error) {
 	return present.Parse(f, name, 0)
 }
 
+var modTime = time.Now()
+var scriptByte []byte
+
+func playHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/javascript")
+	http.ServeContent(w, r, "", modTime, bytes.NewReader(scriptByte))
+}
+
 func playScript(root, transport string) {
-	modTime := time.Now()
 	var buf bytes.Buffer
 	for _, p := range scripts {
 		if s, ok := static.Files[p]; ok {
@@ -116,9 +121,5 @@ func playScript(root, transport string) {
 		buf.Write(b)
 	}
 	fmt.Fprintf(&buf, "\ninitPlayground(new %v());\n", transport)
-	b := buf.Bytes()
-	http.HandleFunc("/play.js", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-type", "application/javascript")
-		http.ServeContent(w, r, "", modTime, bytes.NewReader(b))
-	})
+	scriptByte = buf.Bytes()
 }
