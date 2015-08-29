@@ -46,7 +46,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tmpl, err := template.ParseFiles("./templates/me_layout.tmpl", "./templates/profile.tmpl")
+	tmpl, err := template.ParseFiles("./templates/me/me_layout.tmpl", "./templates/me/profile.tmpl")
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +67,7 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//url, _ :=user.LogoutURL(c, "/logout")
 
-	tmpl, err := template.ParseFiles("./templates/me_layout.tmpl", "./templates/me.tmpl")
+	tmpl, err := template.ParseFiles("./templates/me/me_layout.tmpl", "./templates/me/me.tmpl")
 	if err != nil {
 		panic(err)
 	}

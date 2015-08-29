@@ -15,10 +15,7 @@ type Slide struct {
 	SubTitle  string
 	SpeakDate string
 	Tags      string
-}
-
-type Markdown struct {
-	Content string
+	Markdown  string
 }
 
 type Html struct {

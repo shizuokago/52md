@@ -30,6 +30,15 @@ func init() {
 	mime.AddExtensionType(".svg", "image/svg+xml")
 	http.HandleFunc("/slides/", slideHandler)
 	http.HandleFunc("/play.js", playHandler)
+
+	http.HandleFunc("/me/slide/create", createHandler)
+	http.HandleFunc("/me/slide/edit/", editHandler)
+}
+
+func createHandler(w http.ResponseWriter, r *http.Request) {
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func playable(c present.Code) bool {

@@ -1,0 +1,36 @@
+{{define "body"}}
+
+<form id="slideForm" action="/me/slide/save" method="post">
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" name="Title" id="title" value="{{.Title}}"/>
+      <label class="mdl-textfield__label" for="title">Title...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" id="sub" name="SubTitle" value="{{.SubTitle}}"/>
+      <label class="mdl-textfield__label" for="sub">SubTitle...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" id="speak" name="SpeakDate" value="{{.SpeakDate}}"/>
+      <label class="mdl-textfield__label" for="speak">SpeakDate...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+       <input class="mdl-textfield__input" type="text" id="tags" name="Tags" value="{{.Tags}}"/>
+      <label class="mdl-textfield__label" for="tags">Tags...</label>
+   </div>
+
+
+
+
+   <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
+
+</form>
+
+
+<script>
+$("#save").click(function() {
+    $("#slideForm").submit();
+    return false;
+});
+</script>
+
+{{end}}
