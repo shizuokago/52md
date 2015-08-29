@@ -1,0 +1,36 @@
+{{define "body"}}
+
+<form id="profileForm" action="/me/profile" method="post">
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" name="Name" id="name" value="{{.Name}}"/>
+      <label class="mdl-textfield__label" for="name">Name...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" id="job" name="Job" value="{{.Job}}"/>
+      <label class="mdl-textfield__label" for="job">Job...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" id="email" name="Email" value="{{.Email}}"/>
+      <label class="mdl-textfield__label" for="email">Email...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+       <input class="mdl-textfield__input" type="text" id="url" name="Url" value="{{.Url}}"/>
+      <label class="mdl-textfield__label" for="url">Url...</label>
+   </div>
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" id="twitterid" name="TwitterId" value="{{.TwitterId}}"/>
+      <label class="mdl-textfield__label" for="twitterid">TwitterId...</label>
+   </div>
+   <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
+
+</form>
+
+
+<script>
+$("#save").click(function() {
+    $("#profileForm").submit();
+    return false;
+});
+</script>
+
+{{end}}

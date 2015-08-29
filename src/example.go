@@ -31,13 +31,6 @@ type Who struct {
 	data   string //no
 }
 
-//
-//
-//
-//
-//
-//
-//
 func (s Who) AttributeFile(name string) ([]byte, error) {
 	return []byte(s.data), nil
 }
