@@ -6,6 +6,7 @@ import (
 
 	"appengine"
 	"appengine/user"
+	"html/template"
 )
 
 func init() {
@@ -17,10 +18,20 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	if u == nil {
-		url, _ := user.LoginURL(c, "/")
+		url, _ := user.LoginURL(c, "/me")
 		fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
 		return
 	}
-	url, _ := user.LogoutURL(c, "/")
-	fmt.Fprintf(w, `Welcome, %s! (<a href="%s">sign out</a>)`, u, url)
+	//url, _ :=user.LogoutURL(c, "/logout")
+
+	tmpl, err := template.ParseFiles("./templates/me.tmpl")
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		panic(err)
+	}
+
 }

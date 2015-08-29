@@ -25,13 +25,20 @@ func exampleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type Slide struct {
+type Who struct {
 	author string
 	id     string
 	data   string //no
 }
 
-func (s Slide) AttributeFile(name string) ([]byte, error) {
+//
+//
+//
+//
+//
+//
+//
+func (s Who) AttributeFile(name string) ([]byte, error) {
 	return []byte(s.data), nil
 }
 
@@ -39,7 +46,7 @@ func changeExampleHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	slideTxt := r.FormValue("slide")
 
-	data := Slide{
+	data := Who{
 		author: "secondarykey",
 		id:     "1",
 	}
