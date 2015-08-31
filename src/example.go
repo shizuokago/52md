@@ -36,9 +36,9 @@ func (s Who) AttributeFile(name string) ([]byte, error) {
 }
 
 func changeExampleHandler(w http.ResponseWriter, r *http.Request) {
+
 	r.ParseForm()
 	slideTxt := r.FormValue("slide")
-
 	data := Who{
 		author: "secondarykey",
 		id:     "1",

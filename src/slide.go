@@ -14,6 +14,11 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+
+	"github.com/pborman/uuid"
 )
 
 var (
@@ -33,12 +38,32 @@ func init() {
 
 	http.HandleFunc("/me/slide/create", createHandler)
 	http.HandleFunc("/me/slide/edit/", editHandler)
+	http.HandleFunc("/me/slide/view/", viewHandler)
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
+
+	c := appengine.NewContext(r)
+	// get user data
+
+	slide := Slide{
+		Title:     "EmptyTitle",
+		SubTitle:  "EmptySubTitle",
+		SpeakDate: "",
+		Tags:      "",
+		Markdown:  "",
+	}
+
+	// add empty slide data
+	key, _ := datastore.Put(c, datastore.NewKey(c, "Slide", uuid.New(), 0, nil), &slide)
+	http.Redirect(w, r, "/me/slide/edit/"+key.StringID(), 301)
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
+	//url get key
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func playable(c present.Code) bool {

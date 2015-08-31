@@ -3,6 +3,7 @@ package go2md
 import ()
 
 type User struct {
+	UserKey   string
 	Name      string
 	Job       string
 	Email     string
@@ -11,6 +12,7 @@ type User struct {
 }
 
 type Slide struct {
+	UserKey   string
 	Title     string
 	SubTitle  string
 	SpeakDate string
@@ -19,5 +21,6 @@ type Slide struct {
 }
 
 type Html struct {
+	UserKey string
 	Content string
 }
