@@ -1,8 +1,10 @@
 {{define "body"}}
 
-<button id="addBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-      <i class="material-icons">add</i>
-</button>
+<div class="mdl-grid">
+
+<div class="mdl-cell mdl-cell--1-col"></div>
+<div class="mdl-cell mdl-cell--10-col">
+
 
 <!-- Event card -->
 <style>
@@ -45,8 +47,18 @@ May 24, 2016<br>
 Add to Calendar
 </a>
 <div class="mdl-layout-spacer"></div>
-<i class="material-icons">event</i>
+      <i class="material-icons">event</i>
 </div>
+</div>
+
+</div>
+
+<div class="mdl-cell mdl-cell--1-col">
+<button id="addBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+ <i class="material-icons">add</i>
+</button>
+</div>
+
 </div>
 
 <script>
@@ -54,8 +66,5 @@ $("#addBtn").click(function() {
     location.href="/me/slide/create"
     return false;
 });
-
 </script>
-
-
 {{end}}

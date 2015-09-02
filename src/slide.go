@@ -45,8 +45,10 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
 	// get user data
+	u, _ := getUser(r)
 
 	slide := Slide{
+		UserKey:   u.UserKey,
 		Title:     "EmptyTitle",
 		SubTitle:  "EmptySubTitle",
 		SpeakDate: "",

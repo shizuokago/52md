@@ -1,0 +1,29 @@
+{{define "body"}}
+
+<div class="mdl-grid">
+
+<div class="mdl-cell mdl-cell--4-col"></div>
+
+<div class="mdl-cell mdl-cell--4-col">
+<form id="registerForm" action="/me/register" method="post">
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input class="mdl-textfield__input" type="text" name="UserKey" id="userkey" value="{{.}}"/>
+      <label class="mdl-textfield__label" for="userkey">
+      this value is user slide url key
+      </label>
+   </div>
+   <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
+</form>
+</div>
+
+<div class="mdl-cell mdl-cell--4-col"></div>
+</div>
+
+<script>
+$("#save").click(function() {
+    $("#registerForm").submit();
+    return false;
+});
+</script>
+
+{{end}}

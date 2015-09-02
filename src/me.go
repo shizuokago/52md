@@ -13,9 +13,10 @@ import (
 func init() {
 	http.HandleFunc("/me/", meHandler)
 	http.HandleFunc("/me/profile", profileHandler)
+	http.HandleFunc("/me/register", registerHandler)
 }
 
-func getUser(r *http.Request) (User, error) {
+func getUser(r *http.Request) (*User, error) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	key := datastore.NewKey(c, "User", u.ID, 0, nil)
@@ -23,16 +24,19 @@ func getUser(r *http.Request) (User, error) {
 	if err := datastore.Get(c, key, &rtn); err != nil {
 		if err != datastore.ErrNoSuchEntity {
 			return nil, err
+		} else {
+			return nil, nil
 		}
 	}
-	return rtn, nil
+	return &rtn, nil
 }
 
-func putUser(r *http.Request) (User, error) {
+func putUser(r *http.Request) (*User, error) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	r.ParseForm()
 	rtn := User{
+		UserKey:   r.FormValue("UserKey"),
 		Name:      r.FormValue("Name"),
 		Job:       r.FormValue("Job"),
 		Email:     r.FormValue("Email"),
@@ -43,10 +47,13 @@ func putUser(r *http.Request) (User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return rtn, nil
+	return &rtn, nil
 }
 
-func meRender(tName string, obj interface{}) {
+func meRender(w http.ResponseWriter, tName string, obj interface{}) {
+
+	//select user slide
+
 	tmpl, err := template.ParseFiles("./templates/me/layout.tmpl", tName)
 	if err != nil {
 		return
@@ -57,16 +64,29 @@ func meRender(tName string, obj interface{}) {
 	}
 }
 
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	u := user.Current(c)
+	r.ParseForm()
+	rtn := User{
+		UserKey: r.FormValue("UserKey"),
+	}
+	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
+	if err != nil {
+		panic(err)
+	}
+	meRender(w, "./templates/me/profile.tmpl", rtn)
+}
+
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 
-	var u User
+	var u *User
 	if r.Method == "POST" {
-		u, _ := putUser(r)
+		u, _ = putUser(r)
 	} else {
-		u, _ := getUser(r)
+		u, _ = getUser(r)
 	}
-
-	meRender("./templates/me/profile.tmpl", u)
+	meRender(w, "./templates/me/profile.tmpl", u)
 }
 
 func meHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,5 +98,16 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, url, 301)
 		return
 	}
-	meRender("./templates/me/top.tmpl", nil)
+
+	du, err := getUser(r)
+	if err != nil {
+		panic(err)
+	}
+
+	if du == nil {
+		meRender(w, "./templates/me/userkey.tmpl", nil)
+	} else {
+		meRender(w, "./templates/me/top.tmpl", nil)
+	}
+
 }

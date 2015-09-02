@@ -1,6 +1,15 @@
 {{define "body"}}
 
+<div class="mdl-grid">
+<div class="mdl-cell mdl-cell--4-col"></div>
+
+<div class="mdl-cell mdl-cell--4-col">
 <form id="profileForm" action="/me/profile" method="post">
+   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+       {{.UserKey}}
+       <input type="hidden" name="UserKey" value="{{.UserKey}}"/>
+   </div>
+
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
       <input class="mdl-textfield__input" type="text" name="Name" id="name" value="{{.Name}}"/>
       <label class="mdl-textfield__label" for="name">Name...</label>
@@ -24,6 +33,10 @@
    <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
 
 </form>
+</div>
+
+<div class="mdl-cell mdl-cell--4-col"></div>
+</div>
 
 
 <script>
