@@ -18,6 +18,7 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
 
 	"github.com/pborman/uuid"
 )
@@ -116,6 +117,57 @@ type SlideView struct {
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
+	u, _ := getUser(r)
+
+	urls := strings.Split(r.URL.Path, "/")
+	keyId := urls[4]
+	s, _ := getSlide(r, keyId)
+
+	data := Who{
+		author: "secondarykey",
+		id:     "1",
+	}
+
+	slideTxt := ""
+	slideTxt += s.Title + "\n"
+	slideTxt += s.SubTitle + "\n"
+	slideTxt += s.SpeakDate + "\n"
+	slideTxt += "Tags:" + s.Tags + "\n"
+	slideTxt += "\n"
+	slideTxt += u.Name + "\n"
+	slideTxt += u.Job + "\n"
+	slideTxt += u.Url + "\n"
+	slideTxt += "@" + u.TwitterId + "\n"
+	slideTxt += "\n"
+	slideTxt += s.Markdown
+
+	c := appengine.NewContext(r)
+	log.Infof(c, slideTxt)
+
+	//52md
+	//Golang Present Tools Editor
+	//15 Aug 2015
+	//Tags: golang shizuoka_go
+	//
+	//secondarykey
+	//Programer
+	//http://github.com/shizuokago/52md
+	//@secondarykey
+	//
+	//* This Service Alpha
+
+	ctx := present.Context{ReadFile: data.AttributeFile}
+	reader := strings.NewReader(slideTxt)
+	doc, err := ctx.Parse(reader, "tour.slide", 0)
+	if err != nil {
+		panic(err)
+	}
+
+	tmpl, err := createTemplate()
+	if err != nil {
+		panic(err)
+	}
+	doc.Render(w, tmpl)
 }
 
 func playable(c present.Code) bool {
