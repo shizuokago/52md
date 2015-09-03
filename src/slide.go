@@ -35,7 +35,6 @@ func init() {
 	present.PlayEnabled = true
 	// App Engine has no /etc/mime.types
 	mime.AddExtensionType(".svg", "image/svg+xml")
-	http.HandleFunc("/slides/", slideHandler)
 	http.HandleFunc("/play.js", playHandler)
 
 	http.HandleFunc("/me/slide/create", createHandler)
@@ -52,8 +51,8 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 		UserKey:   u.UserKey,
 		Title:     "EmptyTitle",
 		SubTitle:  "EmptySubTitle",
-		SpeakDate: "1 Aug 2015",
-		Tags:      "",
+		SpeakDate: "1 Sep 2015",
+		Tags:      "golang,present",
 		Markdown:  "* Page 1",
 	}
 
