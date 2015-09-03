@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"google.golang.org/appengine"
@@ -46,14 +47,13 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	// get user data
 	u, _ := getUser(r)
-
 	slide := Slide{
 		UserKey:   u.UserKey,
 		Title:     "EmptyTitle",
 		SubTitle:  "EmptySubTitle",
-		SpeakDate: "",
+		SpeakDate: "1 Aug 2015",
 		Tags:      "",
-		Markdown:  "",
+		Markdown:  "* Page 1",
 	}
 
 	// add empty slide data
@@ -61,11 +61,61 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/me/slide/edit/"+key.StringID(), 301)
 }
 
+func putSlide(r *http.Request, key string) (*Slide, error) {
+	c := appengine.NewContext(r)
+	r.ParseForm()
+
+	slide := Slide{
+		UserKey:   r.FormValue("UserKey"),
+		Title:     r.FormValue("Title"),
+		SubTitle:  r.FormValue("SubTitle"),
+		SpeakDate: r.FormValue("SpeakDate"),
+		Tags:      r.FormValue("Tags"),
+		Markdown:  r.FormValue("Markdown"),
+	}
+	datastore.Put(c, datastore.NewKey(c, "Slide", key, 0, nil), &slide)
+	return &slide, nil
+}
+
+func getSlide(r *http.Request, key string) (*Slide, error) {
+	c := appengine.NewContext(r)
+	k := datastore.NewKey(c, "Slide", key, 0, nil)
+	rtn := Slide{}
+	if err := datastore.Get(c, k, &rtn); err != nil {
+		if err != datastore.ErrNoSuchEntity {
+			return nil, err
+		} else {
+			return nil, nil
+		}
+	}
+	return &rtn, nil
+}
+
 func editHandler(w http.ResponseWriter, r *http.Request) {
-	//url get key
+	//c := appengine.NewContext(r)
+	urls := strings.Split(r.URL.Path, "/")
+	keyId := urls[4]
+
+	var s *Slide
+	if r.Method == "POST" {
+		s, _ = putSlide(r, keyId)
+	} else {
+		s, _ = getSlide(r, keyId)
+	}
+	rtn := SlideView{
+		Key:  keyId,
+		Data: s,
+	}
+	meRender(w, "./templates/me/edit.tmpl", rtn)
+}
+
+type SlideView struct {
+	Key  string
+	Data *Slide
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func playable(c present.Code) bool {

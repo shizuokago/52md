@@ -1,27 +1,35 @@
 {{define "body"}}
 
-<form id="slideForm" action="/me/slide/save" method="post">
+<iframe id="Slide" style="width:100%;height:60%;" src="/me/slide/view/{{.Key}}"></iframe>
+
+<form action="/me/slide/edit/{{.Key}}" id="slideForm" method="post">
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-      <input class="mdl-textfield__input" type="text" name="Title" id="title" value="{{.Title}}"/>
+      <input class="mdl-textfield__input" type="text" name="Title" id="title" value="{{.Data.Title}}"/>
       <label class="mdl-textfield__label" for="title">Title...</label>
    </div>
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-      <input class="mdl-textfield__input" type="text" id="sub" name="SubTitle" value="{{.SubTitle}}"/>
+      <input class="mdl-textfield__input" type="text" id="sub" name="SubTitle" value="{{.Data.SubTitle}}"/>
       <label class="mdl-textfield__label" for="sub">SubTitle...</label>
    </div>
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-      <input class="mdl-textfield__input" type="text" id="speak" name="SpeakDate" value="{{.SpeakDate}}"/>
+      <input class="mdl-textfield__input" type="text" id="speak" name="SpeakDate" value="{{.Data.SpeakDate}}"/>
       <label class="mdl-textfield__label" for="speak">SpeakDate...</label>
    </div>
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-       <input class="mdl-textfield__input" type="text" id="tags" name="Tags" value="{{.Tags}}"/>
+       <input class="mdl-textfield__input" type="text" id="tags" name="Tags" value="{{.Data.Tags}}"/>
       <label class="mdl-textfield__label" for="tags">Tags...</label>
    </div>
 
+   <div class="mdl-textfield mdl-js-textfield">
+       <textarea class="mdl-textfield__input" type="text" rows= "10" name="Markdown" id="markdown" >{{.Data.Markdown}}</textarea>
+       <label class="mdl-textfield__label" for="markdown">write presentation...</label>
+   </div>
+
+   <input type="hidden" name="UserKey" value="{{.Data.UserKey}}" />
+
+
    <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
-
 </form>
-
 
 <script>
 $("#save").click(function() {
