@@ -9,8 +9,8 @@
 <!-- Square card -->
 <style>
 .demo-card-square.mdl-card {
-      width: 280px;
-      height: 120px;
+      width: 240px;
+      height: 160px;
       margin:20px;
       float:left;
 }
@@ -19,7 +19,8 @@
 }
 </style>
 
-{{range .}}
+{{range $index, $element := .Data}}
+
 
 
 <div class="demo-card-square mdl-card mdl-shadow--2dp">
@@ -30,7 +31,7 @@
 {{.SpeakDate}} - {{.SubTitle}} 
 </div>
 <div class="mdl-card__actions mdl-card--border">
-    <a href="/me/slide/edit/{{.Key}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+    <a href="/me/slide/edit/{{Key[$index]}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
 EDIT
 </a>
 </div>

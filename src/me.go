@@ -93,6 +93,7 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html; charset=utf-8")
 	c := appengine.NewContext(r)
 	u := user.Current(c)
+
 	if u == nil {
 		url, _ := user.LoginURL(c, "/me/")
 		http.Redirect(w, r, url, 301)
@@ -107,7 +108,32 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	if du == nil {
 		meRender(w, "./templates/me/userkey.tmpl", nil)
 	} else {
-		meRender(w, "./templates/me/top.tmpl", nil)
+
+		//select user slide
+		userkey := du.UserKey
+		q := datastore.NewQuery("Slide").
+			Filter("UserKey = ", userkey).
+			Order("- SpeakDate")
+		var s []Slide
+		keys, _ := q.GetAll(c, &s)
+
+		rtn := make([]TemplateSlide, len(s))
+		for i, elm := range s {
+			rtn[i] = TemplateSlide{
+				Title:     elm.Title,
+				SubTitle:  elm.SubTitle,
+				SpeakDate: elm.SpeakDate,
+				Key:       keys[i].StringID(),
+			}
+		}
+		meRender(w, "./templates/me/top.tmpl", rtn)
 	}
 
+}
+
+type TemplateSlide struct {
+	Title     string
+	SubTitle  string
+	SpeakDate string
+	Key       string
 }
