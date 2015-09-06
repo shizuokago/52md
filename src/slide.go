@@ -166,7 +166,19 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	doc.Render(w, tmpl)
+
+	rtn := struct {
+		*present.Doc
+		Template    *template.Template
+		PlayEnabled bool
+		LastWord    string
+	}{doc, tmpl, true, u.LastWord}
+	err = tmpl.ExecuteTemplate(w, "root", rtn)
+	if err != nil {
+		panic(err)
+	}
+
+	//doc.Render(w, tmpl)
 }
 
 func playable(c present.Code) bool {

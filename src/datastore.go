@@ -9,6 +9,7 @@ type User struct {
 	Email     string
 	Url       string
 	TwitterId string
+	LastWord  string
 }
 
 type Slide struct {

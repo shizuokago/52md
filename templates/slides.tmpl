@@ -38,7 +38,7 @@
   {{end}}{{/* of Slide block */}}
 
       <article>
-        <h3>Thank you</h3>
+          <h3>{{.LastWord}}</h3>
         {{range .Authors}}
           <div class="presenter">
             {{range .Elem}}{{elem $.Template .}}{{end}}

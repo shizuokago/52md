@@ -42,6 +42,7 @@ func putUser(r *http.Request) (*User, error) {
 		Email:     r.FormValue("Email"),
 		Url:       r.FormValue("Url"),
 		TwitterId: r.FormValue("TwitterId"),
+		LastWord:  r.FormValue("LastWord"),
 	}
 	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
 	if err != nil {
