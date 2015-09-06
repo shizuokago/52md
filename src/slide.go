@@ -17,6 +17,7 @@ func init() {
 	http.HandleFunc("/me/slide/create", createHandler)
 	http.HandleFunc("/me/slide/edit/", editHandler)
 	http.HandleFunc("/me/slide/view/", viewHandler)
+	http.HandleFunc("/me/slide/delete/", deleteHandler)
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
@@ -148,4 +149,19 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	urls := strings.Split(r.URL.Path, "/")
+	keyId := urls[4]
+
+	c := appengine.NewContext(r)
+	k := datastore.NewKey(c, "Slide", keyId, 0, nil)
+
+	//err
+	datastore.Delete(c, k)
+
+	http.Redirect(w, r, "/me/", 301)
+	return
 }

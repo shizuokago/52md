@@ -1,7 +1,7 @@
 {{define "body"}}
 
-<form action="/me/slide/edit/{{.Key}}" id="slideForm" method="post">
 <div class="mdl-grid">
+<form action="/me/slide/edit/{{.Key}}" id="slideForm" method="post">
 <div class="mdl-cell mdl-cell--8-col">
    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
       <input class="mdl-textfield__input" type="text" name="Title" id="title" value="{{.Data.Title}}"/>
@@ -31,10 +31,18 @@
    <input type="hidden" name="UserKey" value="{{.Data.UserKey}}" />
    <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
 </div>
+</form>
+
+<form action="/me/slide/delete/{{.Key}}" id="deleteForm" method="post">
+   <button id="delete" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+     Delete
+   </button>
+</form>
+
+
 
 </div>
 
-</form>
 
 <iframe id="Slide" style="width:100%;height:80%;" src="/me/slide/view/{{.Key}}"></iframe>
 <script>
@@ -43,17 +51,18 @@ $("#save").click(function() {
     $("#slideForm").submit();
     return false;
 });
+$("#delete").click(function() {
+    $("#deleteForm").submit();
+    return false;
+});
 
 $(document).ready(function() {
-        $("#editDialog").dialog({
-                    title: 'タイトルです',
-                    modal: true,
-                    buttons: {
-                        '閉じる': function () {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
+        $("#editDialog").dialog(
+        {
+            autoOpen : true,
+            resizable : true,
+            modal : true,
+        });
 });
 </script>
 
