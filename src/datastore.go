@@ -2,16 +2,6 @@ package go2md
 
 import ()
 
-type User struct {
-	UserKey   string
-	Name      string
-	Job       string
-	Email     string
-	Url       string
-	TwitterId string
-	LastWord  string
-}
-
 type Slide struct {
 	UserKey   string
 	Title     string

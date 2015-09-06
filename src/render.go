@@ -30,7 +30,6 @@ var scriptByte []byte
 func init() {
 	playScript("./", "HTTPTransport")
 	present.PlayEnabled = true
-	// App Engine has no /etc/mime.types
 	mime.AddExtensionType(".svg", "image/svg+xml")
 	http.HandleFunc("/play.js", playHandler)
 }

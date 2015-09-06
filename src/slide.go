@@ -14,7 +14,6 @@ import (
 )
 
 func init() {
-
 	http.HandleFunc("/me/slide/create", createHandler)
 	http.HandleFunc("/me/slide/edit/", editHandler)
 	http.HandleFunc("/me/slide/view/", viewHandler)
@@ -81,16 +80,11 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		s, _ = getSlide(r, keyId)
 	}
-	rtn := SlideView{
-		Key:  keyId,
-		Data: s,
-	}
+	rtn := struct {
+		Key  string
+		Data *Slide
+	}{keyId, s}
 	meRender(w, "./templates/me/edit.tmpl", rtn)
-}
-
-type SlideView struct {
-	Key  string
-	Data *Slide
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
@@ -143,6 +137,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	//doc.Render(w, tmpl)
 	rtn := struct {
 		*present.Doc
 		Template    *template.Template
@@ -153,6 +148,4 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-
-	//doc.Render(w, tmpl)
 }
