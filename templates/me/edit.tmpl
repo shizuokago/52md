@@ -1,5 +1,24 @@
 {{define "body"}}
 
+<!-- Wide card with share menu button -->
+<style>
+.demo-card-wide.mdl-card {
+  position :absolute;
+  left:10px;
+  top:30px;
+  width: 512px;
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background: url('../assets/demos/welcome_card.jpg') center / cover;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+</style>
+
+
 <div class="mdl-grid">
 <form action="/me/slide/edit/{{.Key}}" id="slideForm" method="post">
 <div class="mdl-cell mdl-cell--8-col">
@@ -22,12 +41,33 @@
 </div>
 
 <div class="mdl-cell mdl-cell--4-col">
-    <div id="editDialog">
+
+
+<div class="demo-card-wide mdl-card mdl-shadow--2dp">
+  <div class="mdl-card__title">
+    <h2 class="mdl-card__title-text">Welcome</h2>
+  </div>
+  <div class="mdl-card__supporting-text">
+
    <div class="mdl-textfield mdl-js-textfield">
        <textarea class="mdl-textfield__input" type="text" rows= "15" cols="80" name="Markdown" id="markdown" >{{.Data.Markdown}}</textarea>
        <label class="mdl-textfield__label" for="markdown">write presentation...</label>
    </div>
-   </div>
+
+  </div>
+  <div class="mdl-card__actions mdl-card--border">
+    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+      Get Started
+    </a>
+  </div>
+  <div class="mdl-card__menu">
+    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+      <i class="material-icons">share</i>
+    </button>
+  </div>
+</div>
+
+
    <input type="hidden" name="UserKey" value="{{.Data.UserKey}}" />
    <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
 </div>
@@ -39,8 +79,6 @@
    </button>
 </form>
 
-
-
 </div>
 
 
@@ -51,18 +89,13 @@ $("#save").click(function() {
     $("#slideForm").submit();
     return false;
 });
+
 $("#delete").click(function() {
     $("#deleteForm").submit();
     return false;
 });
 
 $(document).ready(function() {
-        $("#editDialog").dialog(
-        {
-            autoOpen : true,
-            resizable : true,
-            modal : true,
-        });
 });
 </script>
 
