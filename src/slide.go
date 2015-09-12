@@ -11,6 +11,8 @@ import (
 	"google.golang.org/appengine/datastore"
 
 	"github.com/pborman/uuid"
+
+	"time"
 )
 
 func init() {
@@ -29,7 +31,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 		UserKey:   u.UserKey,
 		Title:     "EmptyTitle",
 		SubTitle:  "EmptySubTitle",
-		SpeakDate: "1 Sep 2015",
+		SpeakDate: time.Now().Format("_2 Jan 2006"),
 		Tags:      "golang,present",
 		Markdown:  "* Page 1",
 	}
