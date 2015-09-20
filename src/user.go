@@ -33,6 +33,16 @@ func getUser(r *http.Request) (*User, error) {
 	return &rtn, nil
 }
 
+func getPublicUser(r *http.Request, userKey string) (*User, error) {
+
+	c := appengine.NewContext(r)
+	q := datastore.NewQuery("User").Filter("UserKey = ", userKey)
+	var u []User
+	q.GetAll(c, &u)
+
+	return &u[0], nil
+}
+
 func putUser(r *http.Request) (*User, error) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)

@@ -17,6 +17,7 @@ import (
 )
 
 func init() {
+	http.HandleFunc("/", publicHandler)
 	http.HandleFunc("/me/slide/create", createHandler)
 	http.HandleFunc("/me/slide/edit/", editHandler)
 	http.HandleFunc("/me/slide/view/", viewHandler)
@@ -95,29 +96,47 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	meRender(w, "./templates/me/edit.tmpl", rtn)
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
+func publicHandler(w http.ResponseWriter, r *http.Request) {
+	urls := strings.Split(r.URL.Path, "/")
+	u := urls[1]
+	keyId := urls[2]
 
+	render(u, keyId, strings.Join(urls[2:], ""), w, r)
+	return
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
 	urls := strings.Split(r.URL.Path, "/")
 	u, _ := getUser(r)
-
 	keyId := urls[4]
-	s, _ := getSlide(r, keyId)
 
+	render(u.UserKey, keyId, strings.Join(urls[4:], ""), w, r)
+	return
+}
+
+func render(userKey string, slideKey string, name string, w http.ResponseWriter, r *http.Request) {
+
+	c := appengine.NewContext(r)
+	log.Infof(c, userKey)
+	log.Infof(c, slideKey)
+
+	s, _ := getSlide(r, slideKey)
 	if s == nil {
-		keyName := u.UserKey + "/" + strings.Join(urls[4:], "")
+		keyName := userKey + "/" + name
 		f, _ := getFile(r, keyName)
 		if f != nil {
 			w.Write(f.Data)
 		} else {
-
 		}
-
 		return
 	}
+
 	data := Who{
-		author:  u.UserKey,
+		author:  userKey,
 		request: r,
 	}
+
+	u, _ := getPublicUser(r, userKey)
 
 	slideTxt := ""
 	slideTxt += s.Title + "\n"
@@ -143,8 +162,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	//@secondarykey
 	//
 	//* This Service Alpha
-
-	c := appengine.NewContext(r)
 
 	ctx := present.Context{ReadFile: data.AttributeFile}
 	reader := strings.NewReader(slideTxt)
