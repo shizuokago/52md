@@ -9,6 +9,7 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
 
 	"github.com/pborman/uuid"
 
@@ -93,14 +94,25 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	urls := strings.Split(r.URL.Path, "/")
-	keyId := urls[4]
-
 	u, _ := getUser(r)
+
+	keyId := urls[4]
 	s, _ := getSlide(r, keyId)
 
+	if s == nil {
+		keyName := u.UserKey + "/" + strings.Join(urls[4:], "")
+		f, _ := getFile(r, keyName)
+		if f != nil {
+			w.Write(f.Data)
+		} else {
+
+		}
+
+		return
+	}
 	data := Who{
-		author: "secondarykey",
-		id:     "1",
+		author:  u.UserKey,
+		request: r,
 	}
 
 	slideTxt := ""
@@ -128,8 +140,11 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	//* This Service Alpha
 
+	c := appengine.NewContext(r)
+
 	ctx := present.Context{ReadFile: data.AttributeFile}
 	reader := strings.NewReader(slideTxt)
+	log.Infof(c, "Parse()")
 	doc, err := ctx.Parse(reader, "tour.slide", 0)
 	if err != nil {
 		panic(err)
@@ -147,6 +162,8 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		PlayEnabled bool
 		LastWord    string
 	}{doc, tmpl, true, u.LastWord}
+
+	log.Infof(c, "ExecuteTemplate()")
 	err = tmpl.ExecuteTemplate(w, "root", rtn)
 	if err != nil {
 		panic(err)

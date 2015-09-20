@@ -11,16 +11,26 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 )
 
 type Who struct {
-	author string
-	id     string
-	data   string //no
+	author  string
+	request *http.Request
 }
 
 func (s Who) AttributeFile(name string) ([]byte, error) {
-	return []byte(s.data), nil
+	c := appengine.NewContext(s.request)
+	log.Infof(c, "AttributeFile()")
+
+	key := s.author + "/" + name
+	f, _ := getFile(s.request, key)
+	if f == nil {
+		return []byte("Not Found"), nil
+	}
+	return f.Data, nil
 }
 
 var scripts = []string{"jquery.js", "jquery-ui.js", "playground.js", "play.js"}
