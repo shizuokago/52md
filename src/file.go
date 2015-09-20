@@ -5,6 +5,7 @@ import (
 	"google.golang.org/appengine/datastore"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func init() {
@@ -36,6 +37,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// add empty slide data
 	datastore.Put(c, key, &f)
+	http.Redirect(w, r, r.FormValue("redirect"), 301)
 }
 
 func getFile(r *http.Request, name string) (*File, error) {
@@ -50,4 +52,23 @@ func getFile(r *http.Request, name string) (*File, error) {
 		}
 	}
 	return &rtn, nil
+}
+
+func getFileKey(r *http.Request) ([]string, error) {
+	c := appengine.NewContext(r)
+	u, _ := getUser(r)
+	userKey := u.UserKey
+
+	q := datastore.NewQuery("File").
+		Filter("UserKey = ", userKey)
+	var f []File
+	keys, _ := q.GetAll(c, &f)
+
+	rtn := make([]string, len(keys))
+
+	for idx, elm := range keys {
+		rtn[idx] = strings.Replace(elm.StringID(), userKey, "", 1)
+	}
+	return rtn, nil
+
 }
