@@ -59,10 +59,8 @@ func getFileKey(r *http.Request) ([]string, error) {
 	u, _ := getUser(r)
 	userKey := u.UserKey
 
-	q := datastore.NewQuery("File").
-		Filter("UserKey = ", userKey)
-	var f []File
-	keys, _ := q.GetAll(c, &f)
+	q := datastore.NewQuery("File").KeysOnly().Filter("UserKey = ", userKey)
+	keys, _ := q.GetAll(c, nil)
 
 	rtn := make([]string, len(keys))
 
