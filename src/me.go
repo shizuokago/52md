@@ -76,6 +76,7 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if du == nil {
+		//register userkey
 		meRender(w, "./templates/me/userkey.tmpl", nil)
 	} else {
 
