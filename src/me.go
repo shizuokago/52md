@@ -27,22 +27,30 @@ func meRender(w http.ResponseWriter, tName string, obj interface{}) {
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
+
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	r.ParseForm()
+
+	//exist UserKey(ducaple and /me)
+
 	rtn := User{
 		UserKey: r.FormValue("UserKey"),
 	}
+
 	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
 	if err != nil {
+		//add error handling
 		panic(err)
 	}
+
 	meRender(w, "./templates/me/profile.tmpl", rtn)
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 
 	var u *User
+	// add error handling
 	if r.Method == "POST" {
 		u, _ = putUser(r)
 	} else {
@@ -52,7 +60,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func meHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html; charset=utf-8")
+
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 
@@ -77,6 +85,10 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 			Filter("UserKey = ", userkey).
 			Order("- SpeakDate")
 		var s []Slide
+
+		// function get user Slide
+
+		//add error hanling
 		keys, _ := q.GetAll(c, &s)
 
 		rtn := make([]TemplateSlide, len(s))
@@ -90,7 +102,6 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		meRender(w, "./templates/me/top.tmpl", rtn)
 	}
-
 }
 
 type TemplateSlide struct {

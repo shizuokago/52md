@@ -101,7 +101,7 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 	u := urls[1]
 	keyId := urls[2]
 
-	render(u, keyId, strings.Join(urls[2:], ""), w, r)
+	render(u, keyId, strings.Join(urls[2:], "/"), w, r)
 	return
 }
 
@@ -110,15 +110,15 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := getUser(r)
 	keyId := urls[4]
 
-	render(u.UserKey, keyId, strings.Join(urls[4:], ""), w, r)
+	render(u.UserKey, keyId, strings.Join(urls[4:], "/"), w, r)
 	return
 }
 
 func render(userKey string, slideKey string, name string, w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
-	log.Infof(c, userKey)
-	log.Infof(c, slideKey)
+
+	// good idea!
 
 	s, _ := getSlide(r, slideKey)
 	if s == nil {
@@ -138,6 +138,7 @@ func render(userKey string, slideKey string, name string, w http.ResponseWriter,
 
 	u, _ := getPublicUser(r, userKey)
 
+	// create space data
 	slideTxt := ""
 	slideTxt += s.Title + "\n"
 	slideTxt += s.SubTitle + "\n"

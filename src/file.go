@@ -17,11 +17,13 @@ type File struct {
 	Data    []byte
 }
 
+//change ajax access
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("fileName")
 	file, _, err := r.FormFile("uploadFile")
 	if err != nil {
+		//add error handling
 		return
 	}
 	defer file.Close()
