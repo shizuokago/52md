@@ -67,7 +67,7 @@ func getFileKey(r *http.Request) ([]string, error) {
 	rtn := make([]string, len(keys))
 
 	for idx, elm := range keys {
-		rtn[idx] = strings.Replace(elm.StringID(), userKey, "", 1)
+		rtn[idx] = strings.Replace(elm.StringID(), userKey+"/", "", 1)
 	}
 	return rtn, nil
 

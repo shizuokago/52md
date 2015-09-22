@@ -6,12 +6,7 @@
   <head>
     <title>{{.Title}} : 52md</title>
     <meta charset='utf-8'>
-
-{{if .PlayEnabled}}
-    <script src='/play.js'></script>
     <script src='/static/slides.js'></script>
-{{end}}
-
   </head>
 
   <body style='display: none'>
@@ -58,6 +53,10 @@
       edges of the page to navigate between slides.<br>
       (Press 'H' or navigate to hide this message.)
     </div>
+
+{{if .PlayEnabled}}
+    <script src='/play.js'></script>
+{{end}}
 
   </body>
 </html>
