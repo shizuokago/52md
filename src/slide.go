@@ -113,7 +113,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	log.Infof(c, r.URL.Path)
-
 	urls := strings.Split(r.URL.Path, "/")
 	u, err := getUser(r)
 	if err != nil {
@@ -146,8 +145,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		log.Infof(c, err.Error())
 	}
 
-	log.Infof(c, fmt.Sprintf("[%d]", len(b)))
-
 	_, err = w.Write(b)
 	if err != nil {
 		log.Infof(c, err.Error())
@@ -156,7 +153,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 
-	c := appengine.NewContext(w.request)
+	//c := appengine.NewContext(w.request)
 
 	// create space data
 	slideTxt := ""
@@ -171,8 +168,6 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	slideTxt += "@" + u.TwitterId + "\n"
 	slideTxt += "\n"
 	slideTxt += s.Markdown
-
-	log.Infof(c, slideTxt)
 
 	//52md
 	//Golang Present Tools Editor
@@ -198,7 +193,7 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 		return nil, err
 	}
 
-	//doc.Render(w, tmpl)
+	//add {{.LastWord}}
 	rtn := struct {
 		*present.Doc
 		Template    *template.Template
@@ -212,8 +207,7 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Infof(c, "ここまできてる")
+	writer.Flush()
 
 	return b.Bytes(), nil
 }
