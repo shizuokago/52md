@@ -9,11 +9,13 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
 
 	"github.com/pborman/uuid"
 
 	"bufio"
 	"bytes"
+	"fmt"
 	"time"
 )
 
@@ -108,11 +110,22 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
-	urls := strings.Split(r.URL.Path, "/")
-	u, _ := getUser(r)
-	keyId := urls[4]
+	c := appengine.NewContext(r)
 
-	s, _ := getSlide(r, keyId)
+	log.Infof(c, r.URL.Path)
+
+	urls := strings.Split(r.URL.Path, "/")
+	u, err := getUser(r)
+	if err != nil {
+		log.Infof(c, err.Error())
+	}
+
+	keyId := urls[4]
+	s, err := getSlide(r, keyId)
+	if err != nil {
+		log.Infof(c, err.Error())
+	}
+
 	if s == nil {
 		keyName := u.UserKey + "/" + strings.Join(urls[4:], "/")
 		f, _ := getFile(r, keyName)
@@ -130,9 +143,15 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := createSlide(u, s, &data)
 	if err != nil {
+		log.Infof(c, err.Error())
 	}
 
-	w.Write(b)
+	log.Infof(c, fmt.Sprintf("[%d]", len(b)))
+
+	_, err = w.Write(b)
+	if err != nil {
+		log.Infof(c, err.Error())
+	}
 }
 
 func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
@@ -167,12 +186,12 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	reader := strings.NewReader(slideTxt)
 	doc, err := ctx.Parse(reader, "tour.slide", 0)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	tmpl, err := createTemplate()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	//doc.Render(w, tmpl)
@@ -187,7 +206,7 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	writer := bufio.NewWriter(&b)
 	err = tmpl.ExecuteTemplate(writer, "root", rtn)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return b.Bytes(), nil
