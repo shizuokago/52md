@@ -6,6 +6,9 @@
   <head>
     <title>{{.Title}}</title>
     <meta charset='utf-8'>
+  {{if .PlayEnabled}}
+  <script src='/play.js'></script>
+  {{end}}
     <script src='/static/slides.js'></script>
   </head>
 
@@ -55,9 +58,6 @@
     </div>
 
   </body>
-  {{if .PlayEnabled}}
-  <script src='/play.js'></script>
-  {{end}}
 </html>
 {{end}}
 

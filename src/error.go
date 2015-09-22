@@ -3,6 +3,7 @@ package go2md
 import (
 	"fmt"
 	"html/template"
+	"net/http"
 )
 
 type Go2MdError struct {

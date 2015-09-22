@@ -1,17 +1,10 @@
 package go2md
 
 /*
+This service is still before release.
 
- runtime
+[present] is  golang.org/x/tools/present
 
-    /me     MDL
-	/me/profile
-    /me/slide
-
-
- static
-
-
-
+all Gopher use presentation tool
 
 */

@@ -9,15 +9,25 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine/log"
 
 	"github.com/pborman/uuid"
 
+	"bufio"
+	"bytes"
 	"time"
 )
 
+type Slide struct {
+	UserKey   string
+	Title     string
+	SubTitle  string
+	SpeakDate string
+	Tags      string
+	Markdown  string
+	Date      time.Time
+}
+
 func init() {
-	http.HandleFunc("/", publicHandler)
 	http.HandleFunc("/me/slide/create", createHandler)
 	http.HandleFunc("/me/slide/edit/", editHandler)
 	http.HandleFunc("/me/slide/view/", viewHandler)
@@ -96,15 +106,6 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	meRender(w, "./templates/me/edit.tmpl", rtn)
 }
 
-func publicHandler(w http.ResponseWriter, r *http.Request) {
-	urls := strings.Split(r.URL.Path, "/")
-	u := urls[1]
-	keyId := urls[2]
-
-	render(u, keyId, strings.Join(urls[2:], "/"), w, r)
-	return
-}
-
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	urls := strings.Split(r.URL.Path, "/")
 	u, _ := getUser(r)
@@ -115,10 +116,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func render(userKey string, slideKey string, name string, w http.ResponseWriter, r *http.Request) {
-
-	c := appengine.NewContext(r)
-
-	// good idea!
 
 	s, _ := getSlide(r, slideKey)
 	if s == nil {
@@ -137,6 +134,15 @@ func render(userKey string, slideKey string, name string, w http.ResponseWriter,
 	}
 
 	u, _ := getPublicUser(r, userKey)
+
+	b, err := createSlide(u, s, &data)
+	if err != nil {
+	}
+
+	w.Write(b)
+}
+
+func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 
 	// create space data
 	slideTxt := ""
@@ -164,9 +170,8 @@ func render(userKey string, slideKey string, name string, w http.ResponseWriter,
 	//
 	//* This Service Alpha
 
-	ctx := present.Context{ReadFile: data.AttributeFile}
+	ctx := present.Context{ReadFile: w.AttributeFile}
 	reader := strings.NewReader(slideTxt)
-	log.Infof(c, "Parse()")
 	doc, err := ctx.Parse(reader, "tour.slide", 0)
 	if err != nil {
 		panic(err)
@@ -185,11 +190,14 @@ func render(userKey string, slideKey string, name string, w http.ResponseWriter,
 		LastWord    string
 	}{doc, tmpl, true, u.LastWord}
 
-	log.Infof(c, "ExecuteTemplate()")
-	err = tmpl.ExecuteTemplate(w, "root", rtn)
+	var b bytes.Buffer
+	writer := bufio.NewWriter(&b)
+	err = tmpl.ExecuteTemplate(writer, "root", rtn)
 	if err != nil {
 		panic(err)
 	}
+
+	return b.Bytes(), nil
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
