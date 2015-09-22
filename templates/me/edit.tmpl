@@ -1,6 +1,5 @@
 {{define "body"}}
 <style>
-
 #fileWindow {
   position :absolute;
   background-color:#eee;
@@ -102,33 +101,43 @@
 
 </div>
 
-<iframe id="Slide" style="width:100%;height:80%;" src="/me/slide/view/{{.Key}}"></iframe>
+<iframe id="Slide" style="width:100%;height:80%;">
+</iframe>
+
 <script>
-
-$("#save").click(function() {
-    $("#slideForm").submit();
-    return false;
-});
-
-$("#publish").click(function() {
-    var url = "/me/slide/publish/{{.Key}}";
-    $("#slideForm").attr("action",url);
-    $("#slideForm").submit();
-    return false;
-});
-
-$("#delete").click(function() {
-    $("#deleteForm").submit();
-    return false;
-});
-
 $(document).ready(function() {
+
+    $("#Slide").load(function() {
+    });
+
+    $("#save").click(function() {
+        $("#slideForm").submit();
+        return false;
+    });
+    
+    $("#publish").click(function() {
+        var url = "/me/slide/publish/{{.Key}}";
+        $("#slideForm").attr("action",url);
+        $("#slideForm").submit();
+        return false;
+    });
+
+    $("#delete").click(function() {
+        $("#deleteForm").submit();
+        return false;
+    });
+
+
     $("#editWindow").draggable();
     $("#editWindow").resizable();
     $("#fileWindow").draggable();
     $("#fileWindow").resizable();
-});
 
+    // material design lite ducaple loaded page
+    var src = "/me/slide/view/{{.Key}}";
+    $("#Slide").attr("src",src);
+    $('#Slide')[0].contentDocument.location.reload(true);
+});
 </script>
 
 {{end}}

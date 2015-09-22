@@ -156,6 +156,8 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 
+	c := appengine.NewContext(w.request)
+
 	// create space data
 	slideTxt := ""
 	slideTxt += s.Title + "\n"
@@ -169,6 +171,8 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	slideTxt += "@" + u.TwitterId + "\n"
 	slideTxt += "\n"
 	slideTxt += s.Markdown
+
+	log.Infof(c, slideTxt)
 
 	//52md
 	//Golang Present Tools Editor
@@ -208,6 +212,8 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Infof(c, "ここまできてる")
 
 	return b.Bytes(), nil
 }
