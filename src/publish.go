@@ -11,6 +11,7 @@ import (
 
 type Html struct {
 	UserKey string
+	Title   string
 	Content []byte
 	Date    time.Time
 }
@@ -27,6 +28,8 @@ func init() {
 
 // json access
 func publishHandler(w http.ResponseWriter, r *http.Request) {
+
+	editHandler(w, r)
 
 	urls := strings.Split(r.URL.Path, "/")
 	keyId := urls[4]
@@ -56,6 +59,7 @@ func publishHandler(w http.ResponseWriter, r *http.Request) {
 	html := Html{
 		UserKey: u.UserKey,
 		Content: content,
+		Title:   s.Title,
 		Date:    time.Now(),
 	}
 

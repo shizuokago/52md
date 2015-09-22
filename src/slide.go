@@ -107,19 +107,14 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
+
 	urls := strings.Split(r.URL.Path, "/")
 	u, _ := getUser(r)
 	keyId := urls[4]
 
-	render(u.UserKey, keyId, strings.Join(urls[4:], "/"), w, r)
-	return
-}
-
-func render(userKey string, slideKey string, name string, w http.ResponseWriter, r *http.Request) {
-
-	s, _ := getSlide(r, slideKey)
+	s, _ := getSlide(r, keyId)
 	if s == nil {
-		keyName := userKey + "/" + name
+		keyName := u.UserKey + "/" + strings.Join(urls[4:], "/")
 		f, _ := getFile(r, keyName)
 		if f != nil {
 			w.Write(f.Data)
@@ -129,11 +124,9 @@ func render(userKey string, slideKey string, name string, w http.ResponseWriter,
 	}
 
 	data := Who{
-		author:  userKey,
+		author:  u.UserKey,
 		request: r,
 	}
-
-	u, _ := getPublicUser(r, userKey)
 
 	b, err := createSlide(u, s, &data)
 	if err != nil {

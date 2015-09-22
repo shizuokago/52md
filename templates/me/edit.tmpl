@@ -67,7 +67,13 @@
       </div>
 
       <input type="hidden" name="UserKey" value="{{.Data.UserKey}}" />
-      <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> Save </button>
+      <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> 
+          Save 
+      </button>
+      <button id="publish" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Publish
+      </button>
+      
     </form>
   </div>
 
@@ -99,6 +105,13 @@
 <script>
 
 $("#save").click(function() {
+    $("#slideForm").submit();
+    return false;
+});
+
+$("#publish").click(function() {
+    var url = "/me/slide/publish/{{.Key}}";
+    $("#slideForm").attr("action",url);
     $("#slideForm").submit();
     return false;
 });
