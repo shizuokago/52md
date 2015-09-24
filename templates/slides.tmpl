@@ -57,6 +57,11 @@
 {{if .PlayEnabled}}
     <script src='/play.js'></script>
 {{end}}
+    <script>
+        $('img').error(function () {
+            $(this).attr('src','/static/notfound.png');
+        });
+    </script>
 
   </body>
 </html>
