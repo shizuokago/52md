@@ -77,6 +77,7 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 
 	key := createKey(c, "Html", id)
 	html, err := getHtml(c, key)
+
 	if err != nil {
 		keyName := userKey + "/" + strings.Join(urls[2:], "/")
 		f, _ := getFile(r, keyName)
@@ -85,7 +86,6 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 		}
 		return
-
 	}
 
 	_, err = w.Write(html.Content)
