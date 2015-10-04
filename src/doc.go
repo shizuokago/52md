@@ -1,4 +1,4 @@
-package go2md
+package gopredit
 
 /*
 This service is still before release.
