@@ -71,26 +71,30 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 	urls := strings.Split(r.URL.Path, "/")
 	userKey := urls[1]
 	keyId := urls[2]
-	id := userKey + "/" + keyId
 
-	c := appengine.NewContext(r)
-
-	key := createKey(c, "Html", id)
-	html, err := getHtml(c, key)
-
-	if err != nil {
-		keyName := userKey + "/" + strings.Join(urls[2:], "/")
+    if keyId == "file" {
+		keyName := userKey + "/" + strings.Join(urls[3:], "/")
 		f, _ := getFile(r, keyName)
 		if f != nil {
 			w.Write(f.Data)
 		} else {
 		}
 		return
+    }
+
+	id := userKey + "/" + keyId
+	c := appengine.NewContext(r)
+
+	key := createKey(c, "Html", id)
+	html, err := getHtml(c, key)
+	if err != nil {
 	}
 
+    //response write
 	_, err = w.Write(html.Content)
 	if err != nil {
 		//err page
+
 	}
 }
 

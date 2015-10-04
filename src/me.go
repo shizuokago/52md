@@ -34,13 +34,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	//exist UserKey(ducaple and /me)
 
+
+
+
 	rtn := User{
 		UserKey: r.FormValue("UserKey"),
 	}
-
 	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
 	if err != nil {
-		//add error handling
 		panic(err)
 	}
 
@@ -89,8 +90,9 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 
 		// function get user Slide
 
-		//add error hanling
-		keys, _ := q.GetAll(c, &s)
+		keys, err := q.GetAll(c, &s)
+        if err != nil {
+        }
 
 		rtn := make([]TemplateSlide, len(s))
 		for i, elm := range s {

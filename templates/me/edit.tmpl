@@ -44,6 +44,10 @@ div.mdl-textfield {
     border-color:#aaa;
     outline:1px #aaa solid;
 }
+
+#Slide {
+    height:84.5%;
+}
 </style>
 
 
@@ -97,19 +101,19 @@ div.mdl-textfield {
 
 <div id="fileWindow">
     <form action="/me/file/upload" method="POST" enctype="multipart/form-data">
-        <input type="text" name="fileName" value="" /><br>
+        file/<input type="text" name="fileName" value="" /><br>
         Upload File: <input type="file" name="uploadFile"><br>
         <input type="hidden" name="redirect" value="/me/slide/edit/{{.Key}}" /><br>
         <input type="submit" name="submit" value="Submit">
     </form>
 
 {{ range .File }}
-<a href="/me/slide/view{{.}}" target="_blank">{{.}}</a><br>
+<a href="/me/slide/view/{{.}}" target="_blank">{{.}}</a><br>
 {{ end }}
 
 </div>
 
-<iframe id="Slide" style="width:100%;height:84.5%;">
+<iframe id="Slide" style="width:100%">
 </iframe>
 
 <script>

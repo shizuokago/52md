@@ -110,28 +110,27 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
-
 	log.Infof(c, r.URL.Path)
-	urls := strings.Split(r.URL.Path, "/")
 	u, err := getUser(r)
 	if err != nil {
 		log.Infof(c, err.Error())
 	}
 
+	urls := strings.Split(r.URL.Path, "/")
 	keyId := urls[4]
-	s, err := getSlide(r, keyId)
-	if err != nil {
-		log.Infof(c, err.Error())
-	}
-
-	if s == nil {
-		keyName := u.UserKey + "/" + strings.Join(urls[4:], "/")
+    if keyId == "file" {
+		keyName := u.UserKey + "/" + strings.Join(urls[5:], "/")
 		f, _ := getFile(r, keyName)
 		if f != nil {
 			w.Write(f.Data)
 		} else {
 		}
 		return
+    }
+
+	s, err := getSlide(r, keyId)
+	if err != nil {
+		log.Infof(c, err.Error())
 	}
 
 	data := Who{
