@@ -16,6 +16,7 @@ div.mdl-textfield {
   width: 400px;
   height:500px;
   padding: 10px;
+  display:none;
 }
 
 #editWindow {
@@ -50,6 +51,18 @@ div.mdl-textfield {
 }
 </style>
 
+<div id="fileWindow">
+  <form action="/me/file/upload" method="POST" enctype="multipart/form-data">
+    file/<input type="text" name="fileName" value="" /><br>
+    Upload File: <input type="file" name="uploadFile"><br>
+    <input type="hidden" name="redirect" value="/me/slide/edit/{{.Key}}" /><br>
+    <input type="submit" name="submit" value="Submit">
+  </form>
+
+{{ range .File }}
+  <a href="/me/slide/view/{{.}}" target="_blank">{{.}}</a><br>
+{{ end }}
+</div>
 
 <div class="mdl-grid">
 
@@ -74,7 +87,7 @@ div.mdl-textfield {
       </div>
 
       <div id="editWindow">
-          <h2 class="mdl-card__title-text"><a href="https://godoc.org/golang.org/x/tools/present" target="_blank">MaarkDown</a></h2>
+          <h2 class="mdl-card__title-text"><a href="https://godoc.org/golang.org/x/tools/present" target="_blank">MarkDown</a></h2>
         <textarea name="Markdown" id="markdown" >{{ .Data.Markdown }}</textarea>
       </div>
 
@@ -85,8 +98,10 @@ div.mdl-textfield {
       <button id="publish" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
         Publish
       </button>
-      <a href="/{{.Data.UserKey}}/{{.Key}}" target="_blank">View</a>
-      
+      <button class="mdl-button mdl-js-button" id="viewBtn">View</button>
+      <button class="mdl-button mdl-js-button" id="fileBtn">File</button>
+      <button class="mdl-button mdl-js-button" id="downloadBtn">Download</button>
+
     </form>
   </div>
 
@@ -100,56 +115,53 @@ div.mdl-textfield {
 
 </div>
 
-<div id="fileWindow">
-    <form action="/me/file/upload" method="POST" enctype="multipart/form-data">
-        file/<input type="text" name="fileName" value="" /><br>
-        Upload File: <input type="file" name="uploadFile"><br>
-        <input type="hidden" name="redirect" value="/me/slide/edit/{{.Key}}" /><br>
-        <input type="submit" name="submit" value="Submit">
-    </form>
 
-{{ range .File }}
-<a href="/me/slide/view/{{.}}" target="_blank">{{.}}</a><br>
-{{ end }}
-
-</div>
-
-<iframe id="Slide" style="width:100%">
-</iframe>
+<iframe id="Slide" style="width:100%"></iframe>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    $("#Slide").load(function() {
-    });
-
-    $("#save").click(function() {
-        $("#slideForm").submit();
-        return false;
-    });
+        $("#save").click(function() {
+            $("#slideForm").submit();
+            return false;
+        });
     
-    $("#publish").click(function() {
-        var url = "/me/slide/publish/{{.Key}}";
-        $("#slideForm").attr("action",url);
-        $("#slideForm").submit();
-        return false;
-    });
+        $("#publish").click(function() {
+            var url = "/me/slide/publish/{{.Key}}";
+            $("#slideForm").attr("action",url);
+            $("#slideForm").submit();
+            return false;
+        });
 
-    $("#delete").click(function() {
-        $("#deleteForm").submit();
-        return false;
-    });
+        $("#delete").click(function() {
+            $("#deleteForm").submit();
+            return false;
+        });
 
+        $("#viewBtn").click(function() {
+            window.open("/{{.Data.UserKey}}/{{.Key}}","viewWindow");
+            return false;
+        });
 
-    $("#editWindow").draggable();
-    $("#editWindow").resizable();
-    $("#fileWindow").draggable();
-    $("#fileWindow").resizable();
+        $("#fileBtn").click(function() {
+            $("#fileWindow").show();
+            return false;
+        });
 
-    // material design lite ducaple loaded page
-    var src = "/me/slide/view/{{.Key}}";
-    $("#Slide").attr("src",src);
-    $('#Slide')[0].contentDocument.location.reload(true);
+        $("#downloadBtn").click(function() {
+            return false;
+        });
+
+        // material design lite ducaple loaded page
+        var src = "/me/slide/view/{{.Key}}";
+        $("#Slide").attr("src",src);
+        $('#Slide')[0].contentDocument.location.reload(true);
+
+        $("#editWindow").draggable();
+        $("#editWindow").resizable();
+        $("#fileWindow").draggable();
+        $("#fileWindow").resizable();
+    
 });
 </script>
 
