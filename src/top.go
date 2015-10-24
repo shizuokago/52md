@@ -22,6 +22,7 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 		if f != nil {
 			w.Write(f.Data)
 		} else {
+			errorPage(w, "Error", "Not Found", "This is not found", 404)
 		}
 		return
 	}
@@ -39,7 +40,6 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 	//response write
 	_, err = w.Write(html.Content)
 	if err != nil {
-		//err page
-
+		errorPage(w, "Error", "HTML Write Error", "", 500)
 	}
 }

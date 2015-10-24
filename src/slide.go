@@ -113,24 +113,27 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Infof(c, r.URL.Path)
 	u, err := getUser(r)
 	if err != nil {
-		log.Infof(c, err.Error())
+		errorPage(w, "Not Found", "User Not Found", err.Error(), 404)
+		return
 	}
 
 	urls := strings.Split(r.URL.Path, "/")
 	keyId := urls[4]
-    if keyId == "file" {
+	if keyId == "file" {
 		keyName := u.UserKey + "/" + strings.Join(urls[5:], "/")
 		f, _ := getFile(r, keyName)
 		if f != nil {
 			w.Write(f.Data)
 		} else {
+			errorPage(w, "Not Found", "File Not Found", err.Error(), 404)
 		}
 		return
-    }
+	}
 
 	s, err := getSlide(r, keyId)
 	if err != nil {
-		log.Infof(c, err.Error())
+		errorPage(w, "Slide Error", "Slide Get", err.Error(), 404)
+		return
 	}
 
 	data := Who{
@@ -141,11 +144,13 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := createSlide(u, s, &data)
 	if err != nil {
 		log.Infof(c, err.Error())
+		errorPage(w, "Slide Error", "Slide Create", err.Error(), 500)
+		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		log.Infof(c, err.Error())
+		errorPage(w, "Slide Error", "Slide Write", err.Error(), 500)
 	}
 }
 
@@ -219,7 +224,11 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	k := datastore.NewKey(c, "Slide", keyId, 0, nil)
 
 	//err
-	datastore.Delete(c, k)
+	err := datastore.Delete(c, k)
+	if err != nil {
+		errorPage(w, "Delete Error", "Slide Delete", err.Error(), 404)
+		return
+	}
 
 	http.Redirect(w, r, "/me/", 301)
 	return
