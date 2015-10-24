@@ -25,12 +25,12 @@ func errorPage(w http.ResponseWriter, title, comment, detail string, no int) {
 		No:      no,
 	}
 
-	tmpl, parseErr := template.ParseFiles("template/error.tmpl")
+	tmpl, parseErr := template.ParseFiles("templates/error.tmpl")
 	if parseErr != nil {
 		panic(parseErr)
 	}
 
-	exeError := tmpl.ExecuteTemplate(w, "error", err)
+	exeError := tmpl.ExecuteTemplate(w, "root", err)
 	if exeError != nil {
 		panic(exeError)
 	}
