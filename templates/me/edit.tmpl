@@ -22,25 +22,26 @@ div.mdl-textfield {
 #editWindow {
   position :absolute;
   background-color:#eee;
-  left:20px;
-  top:200px;
   width: 400px;
   height:500px;
 }
 
-#card-title {
-  color: #555;
-  height: 60px;
-  margin:5px;
+#editWindow h3 {
+  font-size:20px;
+  padding:0px;
+  margin:0px;
+  height:24px;
+  left:5px;
 }
 
 #markdown {
     width:380px;
     height:450px;
-    margin:10px;
+    margin:15px;
     border-color:#ccc;
     font-size:20px;
 }
+
 #markdown:focus {
     border-color:#aaa;
     outline:1px #aaa solid;
@@ -81,26 +82,31 @@ div.mdl-textfield {
         <input class="mdl-textfield__input" type="text" id="speak" name="SpeakDate" value="{{.Data.SpeakDate}}"/>
         <label class="mdl-textfield__label" for="speak">SpeakDate...</label>
       </div>
+
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
         <input class="mdl-textfield__input" type="text" id="tags" name="Tags" value="{{.Data.Tags}}"/>
         <label class="mdl-textfield__label" for="tags">Tags...</label>
       </div>
 
-      <div id="editWindow">
-          <h2 class="mdl-card__title-text"><a href="https://godoc.org/golang.org/x/tools/present" target="_blank">MarkDown</a></h2>
-        <textarea name="Markdown" id="markdown" >{{ .Data.Markdown }}</textarea>
-      </div>
 
       <input type="hidden" name="UserKey" value="{{.Data.UserKey}}" />
+
       <button id="save" class="mdl-button mdl-js-button mdl-button--raised"> 
           Save 
       </button>
+
       <button id="publish" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
         Publish
       </button>
+
       <button class="mdl-button mdl-js-button" id="viewBtn">View</button>
       <button class="mdl-button mdl-js-button" id="fileBtn">File</button>
       <button class="mdl-button mdl-js-button" id="downloadBtn">Download</button>
+
+      <div id="editWindow" class="ui-widget-content">
+        <h3><a href="https://godoc.org/golang.org/x/tools/present" target="_blank">MarkDown</a></h3>
+        <textarea name="Markdown" id="markdown" >{{ .Data.Markdown }}</textarea>
+      </div>
 
     </form>
   </div>
