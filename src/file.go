@@ -20,6 +20,8 @@ type File struct {
 //change ajax access
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
+	//ducapple name
+
 	name := r.FormValue("fileName")
 	file, _, err := r.FormFile("uploadFile")
 	if err != nil {
@@ -28,17 +30,26 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 	b, err := ioutil.ReadAll(file)
+	if err != nil {
+	}
 
 	c := appengine.NewContext(r)
+
 	// get user data
-	u, _ := getUser(r)
+	u, err := getUser(r)
+	if err != nil {
+	}
+
 	key := datastore.NewKey(c, "File", u.UserKey+"/"+name, 0, nil)
 	f := File{
 		UserKey: u.UserKey,
 		Data:    b,
 	}
 	// add empty slide data
-	datastore.Put(c, key, &f)
+	err = datastore.Put(c, key, &f)
+	if err != nil {
+	}
+
 	http.Redirect(w, r, r.FormValue("redirect"), 301)
 }
 
@@ -46,6 +57,7 @@ func getFile(r *http.Request, name string) (*File, error) {
 	c := appengine.NewContext(r)
 	key := datastore.NewKey(c, "File", name, 0, nil)
 	rtn := File{}
+
 	if err := datastore.Get(c, key, &rtn); err != nil {
 		if err != datastore.ErrNoSuchEntity {
 			return nil, err
@@ -58,14 +70,17 @@ func getFile(r *http.Request, name string) (*File, error) {
 
 func getFileKey(r *http.Request) ([]string, error) {
 	c := appengine.NewContext(r)
-	u, _ := getUser(r)
-	userKey := u.UserKey
+	u, err := getUser(r)
+	if err != nil {
+	}
 
+	userKey := u.UserKey
 	q := datastore.NewQuery("File").KeysOnly().Filter("UserKey = ", userKey)
-	keys, _ := q.GetAll(c, nil)
+	keys, err := q.GetAll(c, nil)
+	if err != nil {
+	}
 
 	rtn := make([]string, len(keys))
-
 	for idx, elm := range keys {
 		rtn[idx] = strings.Replace(elm.StringID(), userKey, "file", 1)
 	}

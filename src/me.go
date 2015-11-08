@@ -28,35 +28,42 @@ func meRender(w http.ResponseWriter, tName string, obj interface{}) {
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 
+	// judge post
+
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	r.ParseForm()
 
-	//exist UserKey(ducaple and /me)
-
-
-
+	userKey := r.FormValue("UserKey")
+	if existUser(userKey) {
+		return
+	}
 
 	rtn := User{
-		UserKey: r.FormValue("UserKey"),
-	}
-	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
-	if err != nil {
-		panic(err)
+		UserKey: userKey,
 	}
 
+	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
+	if err != nil {
+	}
+	//Profile Page
 	meRender(w, "./templates/me/profile.tmpl", rtn)
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 
 	var u *User
+	var err error
 	// add error handling
 	if r.Method == "POST" {
-		u, _ = putUser(r)
+		u, err = putUser(r)
 	} else {
-		u, _ = getUser(r)
+		u, err = getUser(r)
 	}
+
+	if err != nil {
+	}
+
 	meRender(w, "./templates/me/profile.tmpl", u)
 }
 
@@ -73,14 +80,12 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 
 	du, err := getUser(r)
 	if err != nil {
-		panic(err)
 	}
 
 	if du == nil {
 		//register userkey
 		meRender(w, "./templates/me/userkey.tmpl", nil)
 	} else {
-
 		//select user slide
 		userkey := du.UserKey
 		q := datastore.NewQuery("Slide").
@@ -91,8 +96,8 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 		// function get user Slide
 
 		keys, err := q.GetAll(c, &s)
-        if err != nil {
-        }
+		if err != nil {
+		}
 
 		rtn := make([]TemplateSlide, len(s))
 		for i, elm := range s {

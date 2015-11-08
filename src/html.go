@@ -28,6 +28,7 @@ func init() {
 // json access
 func publishHandler(w http.ResponseWriter, r *http.Request) {
 
+	//redfactoring
 	editHandler(w, r)
 
 	urls := strings.Split(r.URL.Path, "/")
@@ -35,10 +36,12 @@ func publishHandler(w http.ResponseWriter, r *http.Request) {
 
 	u, err := getUser(r)
 	if err != nil {
+		//User not fount
 	}
 
 	s, err := getSlide(r, keyId)
 	if err != nil {
+		//Slide not fount
 	}
 
 	c := appengine.NewContext(r)
@@ -53,6 +56,7 @@ func publishHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, err := createSlide(u, s, &data)
 	if err != nil {
+		//Slide Build Error
 	}
 
 	html := Html{
@@ -63,6 +67,9 @@ func publishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = putHtml(c, key, &html)
+	if err != nil {
+		//Slide Publish Error
+	}
 }
 
 func getHtml(c context.Context, key *datastore.Key) (*Html, error) {

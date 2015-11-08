@@ -18,6 +18,16 @@ type User struct {
 	LastWord  string
 }
 
+func existUser(k string) bool {
+	key := datastore.NewKey(c, "User", k, 0, nil)
+	rtn := User{}
+	if err := datastore.Get(c, key, &rtn); err != nil {
+		//if err != datastore.ErrNoSuchEntity
+		return false
+	}
+	return true
+}
+
 func getUser(r *http.Request) (*User, error) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
