@@ -18,7 +18,8 @@ type User struct {
 	LastWord  string
 }
 
-func existUser(k string) bool {
+func existUser(r *http.Request, k string) bool {
+	c := appengine.NewContext(r)
 	key := datastore.NewKey(c, "User", k, 0, nil)
 	rtn := User{}
 	if err := datastore.Get(c, key, &rtn); err != nil {

@@ -46,7 +46,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		Data:    b,
 	}
 	// add empty slide data
-	err = datastore.Put(c, key, &f)
+	_, err = datastore.Put(c, key, &f)
 	if err != nil {
 	}
 
