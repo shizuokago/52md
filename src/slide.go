@@ -97,13 +97,10 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		s, _ = getSlide(r, keyId)
 	}
 
-	fks, _ := getFileKey(r)
-
 	rtn := struct {
 		Key  string
 		Data *Slide
-		File []string
-	}{keyId, s, fks}
+	}{keyId, s}
 	meRender(w, "./templates/me/edit.tmpl", rtn)
 }
 

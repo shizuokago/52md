@@ -35,7 +35,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	userKey := r.FormValue("UserKey")
-	if existUser(userKey) {
+	if existUser(r, userKey) {
 		return
 	}
 

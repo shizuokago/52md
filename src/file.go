@@ -3,18 +3,34 @@ package gopredit
 import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
 func init() {
+	http.HandleFunc("/me/file/view", fileViewHandler)
 	http.HandleFunc("/me/file/upload", uploadHandler)
 }
 
 type File struct {
 	UserKey string
 	Data    []byte
+}
+
+func fileViewHandler(w http.ResponseWriter, r *http.Request) {
+
+	rtn, _ := getFileKey(r)
+
+	tmpl, err := template.ParseFiles("./templates/me/file.tmpl")
+	if err != nil {
+		return
+	}
+	err = tmpl.Execute(w, rtn)
+	if err != nil {
+		return
+	}
 }
 
 //change ajax access
@@ -50,7 +66,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 	}
 
-	http.Redirect(w, r, r.FormValue("redirect"), 301)
+	http.Redirect(w, r, "/me/file/view", 301)
 }
 
 func getFile(r *http.Request, name string) (*File, error) {
