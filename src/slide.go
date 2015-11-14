@@ -54,10 +54,8 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/me/slide/edit/"+key.StringID(), 301)
 }
 
-func putSlide(r *http.Request, key string) (*Slide, error) {
-	c := appengine.NewContext(r)
+func createFormSlide(r *http.Request) (*Slide, error) {
 	r.ParseForm()
-
 	slide := Slide{
 		UserKey:   r.FormValue("UserKey"),
 		Title:     r.FormValue("Title"),
@@ -66,8 +64,20 @@ func putSlide(r *http.Request, key string) (*Slide, error) {
 		Tags:      r.FormValue("Tags"),
 		Markdown:  r.FormValue("Markdown"),
 	}
-	datastore.Put(c, datastore.NewKey(c, "Slide", key, 0, nil), &slide)
 	return &slide, nil
+}
+
+func putSlide(r *http.Request, key string) (*Slide, error) {
+	c := appengine.NewContext(r)
+	slide, err := createFormSlide(r)
+	if err != nil {
+	}
+	k := createKey(c, "Slide", key)
+
+	_, err = datastore.Put(c, k, slide)
+	if err != nil {
+	}
+	return slide, nil
 }
 
 func getSlide(r *http.Request, key string) (*Slide, error) {
@@ -101,6 +111,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		Key  string
 		Data *Slide
 	}{keyId, s}
+
 	meRender(w, "./templates/me/edit.tmpl", rtn)
 }
 
@@ -151,25 +162,38 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func addLine(orgData, data, prefix string) string {
+	if data != "" {
+		if prefix != "" {
+			orgData += prefix + data + "\n"
+		} else {
+			orgData += data + "\n"
+		}
+	}
+	return orgData
+}
+
 func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 
 	//c := appengine.NewContext(w.request)
 
 	// create space data
 	slideTxt := ""
-	slideTxt += s.Title + "\n"
-	slideTxt += s.SubTitle + "\n"
-	slideTxt += s.SpeakDate + "\n"
-	slideTxt += "Tags:" + s.Tags + "\n"
+	slideTxt = addLine(slideTxt, s.Title, "")
+	slideTxt = addLine(slideTxt, s.SubTitle, "")
+	slideTxt = addLine(slideTxt, s.SpeakDate, "")
+	slideTxt = addLine(slideTxt, s.Tags, "Tags:")
 	slideTxt += "\n"
-	slideTxt += u.Name + "\n"
-	slideTxt += u.Job + "\n"
-	slideTxt += u.Url + "\n"
-	slideTxt += "@" + u.TwitterId + "\n"
+
+	slideTxt = addLine(slideTxt, u.Name, "")
+	slideTxt = addLine(slideTxt, u.Job, "")
+	slideTxt = addLine(slideTxt, u.Url, "")
+	slideTxt = addLine(slideTxt, u.TwitterId, "@")
+
 	slideTxt += "\n"
 	slideTxt += s.Markdown
 
-	//52md
+	//
 	//Golang Present Tools Editor
 	//15 Aug 2015
 	//Tags: golang shizuoka_go
@@ -193,7 +217,10 @@ func createSlide(u *User, s *Slide, w *Who) ([]byte, error) {
 		return nil, err
 	}
 
-	//add {{.LastWord}}
+	if u.LastWord == "" {
+		u.LastWord = "Thank you"
+	}
+
 	rtn := struct {
 		*present.Doc
 		Template    *template.Template

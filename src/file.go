@@ -3,6 +3,7 @@ package gopredit
 import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/user"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -22,7 +23,6 @@ type File struct {
 func fileViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	rtn, _ := getFileKey(r)
-
 	tmpl, err := template.ParseFiles("./templates/me/file.tmpl")
 	if err != nil {
 		return
@@ -33,7 +33,6 @@ func fileViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//change ajax access
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	//ducapple name
@@ -50,17 +49,32 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c := appengine.NewContext(r)
-
 	// get user data
 	u, err := getUser(r)
 	if err != nil {
 	}
 
 	key := datastore.NewKey(c, "File", u.UserKey+"/"+name, 0, nil)
+	rtn := File{}
+	if err = datastore.Get(c, key, &rtn); err != nil {
+		if err != datastore.ErrNoSuchEntity {
+			return
+		}
+	} else {
+		u.Size -= int64(len(rtn.Data))
+	}
+
 	f := File{
 		UserKey: u.UserKey,
 		Data:    b,
 	}
+	u.Size += int64(len(b))
+	lu := user.Current(c)
+
+	_, err = datastore.Put(c, datastore.NewKey(c, "User", lu.ID, 0, nil), u)
+	if err != nil {
+	}
+
 	// add empty slide data
 	_, err = datastore.Put(c, key, &f)
 	if err != nil {

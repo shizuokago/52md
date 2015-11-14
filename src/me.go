@@ -41,6 +41,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	rtn := User{
 		UserKey: userKey,
+		Size:    0,
 	}
 
 	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
@@ -73,7 +74,10 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	u := user.Current(c)
 
 	if u == nil {
-		url, _ := user.LoginURL(c, "/me/")
+		url, err := user.LoginURL(c, "/me/")
+		if err != nil {
+		}
+
 		http.Redirect(w, r, url, 301)
 		return
 	}

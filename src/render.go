@@ -3,8 +3,6 @@ package gopredit
 import (
 	"bytes"
 	"fmt"
-	"golang.org/x/tools/godoc/static"
-	"golang.org/x/tools/present"
 	"html/template"
 	"io/ioutil"
 	"mime"
@@ -12,26 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
+	"golang.org/x/tools/godoc/static"
+	"golang.org/x/tools/present"
 )
-
-type Who struct {
-	author  string
-	request *http.Request
-}
-
-func (s Who) AttributeFile(name string) ([]byte, error) {
-	c := appengine.NewContext(s.request)
-	log.Infof(c, "AttributeFile()")
-
-	key := s.author + "/" + name
-	f, _ := getFile(s.request, key)
-	if f == nil {
-		return []byte("Not Found"), nil
-	}
-	return f.Data, nil
-}
 
 var scripts = []string{"jquery.js", "jquery-ui.js", "playground.js", "play.js"}
 var modTime = time.Now()

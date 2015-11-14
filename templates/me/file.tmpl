@@ -5,21 +5,31 @@
     <body>
 
   <form action="/me/file/upload" method="POST" enctype="multipart/form-data">
+
     file/<input type="text" name="fileName" value="" id="fileName"/><br>
-    Upload File: <input type="file" name="uploadFile" id="uploadFile"><br>
+    <input type="file" name="uploadFile" id="uploadFile"><br>
+
     <input type="submit" name="submit" value="Submit">
   </form>
+
+  <div id="fileBox">
 {{ range . }}
   <a href="/me/slide/view/{{.}}" target="_blank">{{.}}</a><br>
 {{ end }}
+  </div>
 
 <script>
 
 $(document).ready(function() {
+
         $("#uploadFile").change(function() {
              var fileList = document.getElementById("uploadFile").files; 
              $("#fileName").val(fileList[0].name);
+
+             //file name ducaple
+
         });
+
 });
 
 </script>

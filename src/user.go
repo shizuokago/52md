@@ -6,6 +6,7 @@ import (
 	"google.golang.org/appengine/user"
 
 	"net/http"
+	"strconv"
 )
 
 type User struct {
@@ -16,14 +17,24 @@ type User struct {
 	Url       string
 	TwitterId string
 	LastWord  string
+	Size      int64
 }
 
 func existUser(r *http.Request, k string) bool {
+
 	c := appengine.NewContext(r)
-	key := datastore.NewKey(c, "User", k, 0, nil)
-	rtn := User{}
-	if err := datastore.Get(c, key, &rtn); err != nil {
-		//if err != datastore.ErrNoSuchEntity
+	if k == "me" || k == "file" {
+		return false
+	}
+
+	q := datastore.NewQuery("User").Filter("UserKey = ", k)
+	count ,err := q.Count(c)
+
+	if err != nil {
+		return false
+	}
+
+	if count >= 1 {
 		return false
 	}
 	return true
@@ -48,6 +59,11 @@ func putUser(r *http.Request) (*User, error) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	r.ParseForm()
+
+	size, err := strconv.ParseInt(r.FormValue("Size"), 10, 64)
+	if err != nil {
+		return nil, err
+	}
 	rtn := User{
 		UserKey:   r.FormValue("UserKey"),
 		Name:      r.FormValue("Name"),
@@ -56,8 +72,10 @@ func putUser(r *http.Request) (*User, error) {
 		Url:       r.FormValue("Url"),
 		TwitterId: r.FormValue("TwitterId"),
 		LastWord:  r.FormValue("LastWord"),
+		Size:      size,
 	}
-	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
+
+	_, err = datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
 	if err != nil {
 		return nil, err
 	}

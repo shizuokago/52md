@@ -25,5 +25,6 @@ func put(c context.Context, key *datastore.Key, v interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
