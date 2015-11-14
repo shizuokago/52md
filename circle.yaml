@@ -7,9 +7,9 @@ dependencies:
         - unzip -q -d $HOME $HOME/go_appengine_1.9.28.zip
     override:
         - $HOME/go_appengine/goapp build
-test:
-    override:
-        - $HOME/go_appengine/goapp test
+#test:
+#    override:
+#        - $HOME/go_appengine/goapp test
 deployment:
     appengine:
         branch: master
