@@ -13,11 +13,43 @@ import (
 func init() {
 	http.HandleFunc("/me/file/view", fileViewHandler)
 	http.HandleFunc("/me/file/upload", uploadHandler)
+
+	http.HandleFunc("/me/slide/view/file/", fileHandler)
+	http.HandleFunc("/file/", fileHandler)
 }
 
 type File struct {
 	UserKey string
 	Data    []byte
+}
+
+func fileHandler(w http.ResponseWriter, r *http.Request) {
+
+	urls := strings.Split(r.URL.Path, "/")
+	me := urls[1]
+
+	var userKey string
+
+	idx := 3
+	if me == "me" {
+		idx = 5
+		u, err := getUser(r)
+		if err != nil {
+			errorPage(w, "Not Found", "User Not Found", err.Error(), 404)
+			return
+		}
+		userKey = u.UserKey
+	} else {
+		userKey = urls[1]
+	}
+
+	keyName := userKey + "/" + strings.Join(urls[idx:], "/")
+	f, _ := getFile(r, keyName)
+	if f != nil {
+		w.Write(f.Data)
+	} else {
+		//Error
+	}
 }
 
 func fileViewHandler(w http.ResponseWriter, r *http.Request) {

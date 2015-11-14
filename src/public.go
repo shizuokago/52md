@@ -30,18 +30,6 @@ func publicHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if keyId == "file" {
-		keyName := userKey + "/" + strings.Join(urls[3:], "/")
-
-		f, _ := getFile(r, keyName)
-		if f != nil {
-			w.Write(f.Data)
-		} else {
-			errorPage(w, "Error", "Not Found", "This is not found", 404)
-		}
-		return
-	}
-
 	if count > 3 {
 		errorPage(w, "URL Error", "Argument Error", "", 400)
 		return

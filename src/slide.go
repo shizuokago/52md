@@ -136,7 +136,6 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
-	log.Infof(c, r.URL.Path)
 	u, err := getUser(r)
 	if err != nil {
 		errorPage(w, "Not Found", "User Not Found", err.Error(), 404)
@@ -145,17 +144,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	urls := strings.Split(r.URL.Path, "/")
 	keyId := urls[4]
-	if keyId == "file" {
-		keyName := u.UserKey + "/" + strings.Join(urls[5:], "/")
-		f, _ := getFile(r, keyName)
-		if f != nil {
-			w.Write(f.Data)
-		} else {
-			errorPage(w, "Not Found", "File Not Found", err.Error(), 404)
-		}
-		return
-	}
-
 	s, err := getSlide(r, keyId)
 	if err != nil {
 		errorPage(w, "Slide Error", "Slide Get", err.Error(), 404)
