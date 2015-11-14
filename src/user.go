@@ -28,8 +28,7 @@ func existUser(r *http.Request, k string) bool {
 	}
 
 	q := datastore.NewQuery("User").Filter("UserKey = ", k)
-	count ,err := q.Count(c)
-
+	count, err := q.Count(c)
 	if err != nil {
 		return false
 	}

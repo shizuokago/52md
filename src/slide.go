@@ -42,16 +42,22 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := getUser(r)
 	slide := Slide{
 		UserKey:   u.UserKey,
-		Title:     "EmptyTitle",
-		SubTitle:  "EmptySubTitle",
+		Title:     "Title",
+		SubTitle:  "SubTitle",
 		SpeakDate: time.Now().Format("_2 Jan 2006"),
-		Tags:      "golang,present",
-		Markdown:  "* Page 1",
+		Tags:      "golang",
+		Markdown:  "* Welcome GoPreEdit",
 	}
 
+	k := datastore.NewKey(c, "Slide", uuid.New(), 0, nil)
 	// add empty slide data
-	key, _ := datastore.Put(c, datastore.NewKey(c, "Slide", uuid.New(), 0, nil), &slide)
-	http.Redirect(w, r, "/me/slide/edit/"+key.StringID(), 301)
+	key, err := datastore.Put(c, k, &slide)
+	if err != nil {
+		errorPage(w, "InternalServerError", err.Error(), "Put Error", 500)
+	} else {
+		http.Redirect(w, r, "/me/slide/edit/"+key.StringID(), 301)
+	}
+
 }
 
 func createFormSlide(r *http.Request) (*Slide, error) {
@@ -63,6 +69,7 @@ func createFormSlide(r *http.Request) (*Slide, error) {
 		SpeakDate: r.FormValue("SpeakDate"),
 		Tags:      r.FormValue("Tags"),
 		Markdown:  r.FormValue("Markdown"),
+		Date:      time.Now(),
 	}
 	return &slide, nil
 }
@@ -71,11 +78,14 @@ func putSlide(r *http.Request, key string) (*Slide, error) {
 	c := appengine.NewContext(r)
 	slide, err := createFormSlide(r)
 	if err != nil {
+		return nil, err
 	}
+
 	k := createKey(c, "Slide", key)
 
 	_, err = datastore.Put(c, k, slide)
 	if err != nil {
+		return nil, err
 	}
 	return slide, nil
 }
@@ -95,16 +105,23 @@ func getSlide(r *http.Request, key string) (*Slide, error) {
 	return &rtn, nil
 }
 
+// Slide EditView
 func editHandler(w http.ResponseWriter, r *http.Request) {
 
 	urls := strings.Split(r.URL.Path, "/")
 	keyId := urls[4]
 
 	var s *Slide
+	var err error
 	if r.Method == "POST" {
-		s, _ = putSlide(r, keyId)
+		s, err = putSlide(r, keyId)
 	} else {
-		s, _ = getSlide(r, keyId)
+		s, err = getSlide(r, keyId)
+	}
+
+	if err != nil {
+		errorPage(w, "Slide Error", err.Error(), "Get ? Put ?", 500)
+		return
 	}
 
 	rtn := struct {
@@ -115,6 +132,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	meRender(w, "./templates/me/edit.tmpl", rtn)
 }
 
+// Slide View
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
@@ -250,7 +268,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	//err
 	err := datastore.Delete(c, k)
 	if err != nil {
-		errorPage(w, "Delete Error", "Slide Delete", err.Error(), 404)
+		errorPage(w, "Delete Error", "Slide Delete", err.Error(), 500)
 		return
 	}
 
