@@ -3,6 +3,7 @@ package gopredit
 import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/user"
 	"html/template"
 
@@ -16,10 +17,12 @@ func init() {
 }
 
 func meRender(w http.ResponseWriter, tName string, obj interface{}) {
+
 	tmpl, err := template.ParseFiles("./templates/me/layout.tmpl", tName)
 	if err != nil {
 		return
 	}
+
 	err = tmpl.Execute(w, obj)
 	if err != nil {
 		return
@@ -28,14 +31,17 @@ func meRender(w http.ResponseWriter, tName string, obj interface{}) {
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 
-	// judge post
-
 	c := appengine.NewContext(r)
+
+	log.Infof(c, "Register")
+
 	u := user.Current(c)
 	r.ParseForm()
 
 	userKey := r.FormValue("UserKey")
+	log.Infof(c, "UserKey:%s", userKey)
 	if existUser(r, userKey) {
+		log.Infof(c, "Exists")
 		return
 	}
 
@@ -46,7 +52,9 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := datastore.Put(c, datastore.NewKey(c, "User", u.ID, 0, nil), &rtn)
 	if err != nil {
+		panic(err)
 	}
+
 	//Profile Page
 	meRender(w, "./templates/me/profile.tmpl", rtn)
 }

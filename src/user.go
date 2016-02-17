@@ -24,19 +24,19 @@ func existUser(r *http.Request, k string) bool {
 
 	c := appengine.NewContext(r)
 	if k == "me" || k == "file" {
-		return false
+		return true
 	}
 
 	q := datastore.NewQuery("User").Filter("UserKey = ", k)
 	count, err := q.Count(c)
 	if err != nil {
-		return false
+		return true
 	}
 
 	if count >= 1 {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func getUser(r *http.Request) (*User, error) {
